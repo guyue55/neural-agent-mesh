@@ -365,6 +365,29 @@ button { cursor: pointer; border: 0; background: none; color: inherit; }
 .sb-state { border-right: 0; gap: 7px; }
 .sb-state b { color: var(--green); font-size: 9.5px; letter-spacing: .1em; }
 
+/* ---------------- NO-JS / WEBGL FALLBACK ---------------- */
+.noscript-note {
+  position: fixed; inset: 0; z-index: 200; display: grid; place-items: center;
+  padding: 24px; text-align: center; background: var(--bg); color: var(--text-hi);
+  font-size: 12px; line-height: 1.7;
+}
+#gl-fallback {
+  position: absolute; inset: 0; z-index: 32; display: grid; place-items: center;
+  padding: 18px; background: rgba(4, 8, 15, .96);
+  background-image: radial-gradient(ellipse 60% 50% at 50% 45%, rgba(18, 40, 70, .35), transparent 75%);
+}
+#gl-fallback[hidden] { display: none; }
+.gfb-inner { max-width: 430px; text-align: center; }
+.gfb-title { font-size: 13px; font-weight: 700; letter-spacing: .18em; color: var(--orange); text-shadow: 0 0 16px rgba(255,180,84,.35); }
+.gfb-copy { font-size: 10px; color: var(--text); line-height: 1.75; margin: 12px 0 16px; }
+.gfb-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; background: var(--line-soft); }
+.gfb-grid div { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--panel-2); }
+.gfb-grid span { font-size: 8px; color: var(--muted-2); letter-spacing: .12em; }
+.gfb-grid b { font-size: 10px; color: var(--green); letter-spacing: .06em; }
+.gfb-hint { font-size: 9px; color: var(--muted); line-height: 1.7; margin: 14px 0 10px; }
+#gfb-retry { padding: 7px 16px; border: 1px solid rgba(41,216,242,.4); border-radius: 5px; color: var(--cyan); background: rgba(41,216,242,.07); font-size: 9px; font-weight: 700; letter-spacing: .14em; }
+#gfb-retry:hover { background: rgba(41,216,242,.18); }
+
 /* ---------------- GLOBAL FX ---------------- */
 #fx-scanlines { position: fixed; inset: 0; z-index: 90; pointer-events: none; opacity: .16; background: repeating-linear-gradient(180deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 2px, rgba(0,0,0,.45) 3px, rgba(0,0,0,0) 4px); mix-blend-mode: multiply; }
 #fx-vignette { position: fixed; inset: 0; z-index: 91; pointer-events: none; box-shadow: inset 0 0 180px rgba(0,0,0,.68); }
@@ -385,8 +408,46 @@ button { cursor: pointer; border: 0; background: none; color: inherit; }
   .hud-br, .hud-bl { display: none; }
   .node-tag { transform-origin: center; }
 }
-@media (max-width: 780px) {
-  #workspace { grid-template-columns: 1fr; grid-template-rows: 190px minmax(300px, 1fr) 220px; }
-  #left-panel, #right-panel { display: none; }
-  .hud-tl { display: none; }
+/* Below ~980px the three-column console cannot give the 3D stage enough
+   room, so switch to a scrollable single-column stack instead of hiding the
+   panels (which used to leave a 190px canvas on top of a blank page). */
+@media (max-width: 980px) {
+  :root { --top: 54px; --bottom: 46px; --gap: 8px; }
+  html, body { height: auto; min-height: 100%; overflow-x: clip; }
+  body { overflow-y: visible; }
+  #app {
+    position: relative; inset: auto; min-height: 100vh; height: auto;
+    grid-template-rows: var(--top) auto var(--bottom);
+  }
+  #topbar { position: sticky; top: 0; }
+  #workspace {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(420px, 62vh) auto auto;
+    gap: var(--gap);
+  }
+  #stage { grid-row: 1; min-height: 420px; }
+  #left-panel { grid-row: 2; max-height: 340px; overflow-y: auto; }
+  #right-panel { grid-row: 3; max-height: 440px; overflow-y: auto; }
+  #statusbar {
+    position: sticky; bottom: 0;
+    grid-template-columns: repeat(4, 1fr);
+    min-height: var(--bottom);
+  }
+  .sb-cell:nth-child(n+5) { display: none; }
+  .hud-tl, .hud-tr, .hud-br, .hud-bl { display: none; }
+  .brand-title { font-size: 10px; }
+  .brand-sub { display: none; }
+}
+
+/* Respect the OS "reduce motion" setting: kill decorative CSS motion,
+   remove CRT scanlines, and (in main.js) slow the shader clock down. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .pulse-dot { animation: none !important; }
+  #fx-scanlines { display: none; }
 }

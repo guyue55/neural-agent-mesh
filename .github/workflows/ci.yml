@@ -53,6 +53,8 @@ jobs:
           BASE_URL=http://127.0.0.1:4173/ node tools/verify.mjs
           echo "=== viewport suite ==="
           BASE_URL=http://127.0.0.1:4173/ node tools/verify-viewports.mjs
+          echo "=== UX / resilience suite ==="
+          BASE_URL=http://127.0.0.1:4173/ node tools/verify-ux.mjs
 
       - name: Upload verification screenshots
         if: always()

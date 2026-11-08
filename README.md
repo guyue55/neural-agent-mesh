@@ -30,6 +30,8 @@ It is **not** connected to Grok, Codex, OpenAI, or any LLM / agent runtime. Logs
 - **Three-panel console** — DRAFT / BUILD / RUN PIPELINE, 21 agent cards, log terminal, throughput counters, cost readout, brief input, STOP / RESTART.
 - **Working state machine** — unattended cold start runs BOOT → DRAFT → BUILD → RUN, fires handoffs, opens a human gate, accepts a custom brief, and loops.
 - **Fully offline** — Three.js r180 and the 11 addon files it actually uses are vendored under `vendor/`. No CDN, no build step, no network request at runtime.
+- **Responsive & resilient** — below 980 px the three panels stack into a scrollable single column (nothing is hidden); the status bar stays pinned and DPR is capped harder on small hi-DPI screens.
+- **Graceful degradation** — `prefers-reduced-motion` slows the shader clock and removes CRT decoration; a missing or lost WebGL context shows a readable, content-equivalent fallback instead of a blank canvas; hidden tabs stop GPU work.
 
 ## Quick start
 
@@ -81,18 +83,30 @@ Data flow: `workflow.tick(dt)` mutates a plain state object → `scene3d.syncFro
 
 ## Verification
 
-Three real-browser suites drive a system Chrome (or Playwright Chromium on Linux/CI) with WebGL2 / SwiftShader:
+Four real-browser suites drive a system Chrome (or Playwright Chromium on Linux/CI) with WebGL2 / SwiftShader:
 
 ```bash
 npm run verify                                  # 31 functional checks + 9 screenshots
 npm run verify:viewports                        # 7 viewport sizes, label overlap / clipping
+npm run verify:ux                               # 35 UX / resilience checks (see below)
+npm run verify:all                              # all three local suites
 npm run verify:live -- https://your-host/       # 19 checks against a deployed URL
 BASE_URL=http://127.0.0.1:4173/ npm run verify # point the suites at another host
 ```
 
-Latest results on this codebase: **31/31** functional, **7/7** viewports, **19/19** deployed-URL checks; zero console, page, runtime or HTTP errors. Screenshots and machine-readable `report.json` are written to `tools/shots/` (git-ignored).
+`verify:ux` covers 390 px / 900 px / 1024 px / 1440 px layouts, DPR capping, 21 labels with zero overlaps, `prefers-reduced-motion`, a simulated missing WebGL context, `webglcontextlost`, background-tab GPU suspension and document metadata.
 
-CI runs the syntax check and the full `verify` suite on every push / PR via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+Latest results on this codebase: **31/31** functional, **7/7** viewports, **35/35** UX, **19/19** deployed-URL checks; zero console, page, runtime or HTTP errors. Screenshots and machine-readable `report.json` / `ux-report.json` are written to `tools/shots/` (git-ignored).
+
+CI runs the syntax check and the full `verify` + `verify:viewports` + `verify:ux` suites on every push / PR via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
+## Deliberate non-goals & future work
+
+- **No WebGPU / TSL migration (yet).** The latest Three.js is r187 (Oct 2026); this repo deliberately pins the vendored r180 WebGL path. Porting means rewriting every custom `ShaderMaterial` into TSL and replacing `EffectComposer` with the node-based post pipeline. With all 474 edges already merged into a single draw call, WebGPU's main wins (many draw calls, compute shaders) would not repay that risk for a 21-node scene.
+- **No security response headers.** GitHub Pages cannot set `Content-Security-Policy`, `Strict-Transport-Security`, `X-Frame-Options` or `X-Content-Type-Options`. The page ships zero third-party scripts and sets a strict `Referrer-Policy` meta; real headers require a CDN/proxy in front or a different host.
+- **No live agent backend.** To attach one, emit events following the (still experimental) OpenTelemetry GenAI semantic conventions — `invoke_agent`, `execute_tool`, `invoke_workflow` spans with `gen_ai.*` attributes — and adapt them into the plain state object consumed by `src/workflow.js`. The 3D and DOM layers need no changes.
+- **Hidden tabs.** Browsers suspend `requestAnimationFrame` in background tabs. The simulation resumes from wall-clock time on return instead of replaying the whole elapsed interval.
+- **Optional hardening not applied:** SHA-pinned GitHub Actions, CodeQL / OpenSSF Scorecard, signed releases and branch protection. They are reasonable next steps for a repository with multiple contributors, but add CI surface without changing the delivered site.
 
 ## Deploying
 

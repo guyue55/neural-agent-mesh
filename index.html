@@ -4,8 +4,17 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#04070d" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta name="description" content="Neural Agent Mesh — a Three.js visualization of a multi-agent pipeline: 21 nodes, 474 glowing handoff channels, live logs, QA gates and cost telemetry. Runs entirely offline in the browser." />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="CODEX // NEURAL AGENT MESH" />
+<meta property="og:description" content="A cyberpunk Three.js console that renders a 21-node / 474-channel multi-agent workflow as a living neural mesh." />
+<meta property="og:url" content="https://guyue55.github.io/neural-agent-mesh/" />
+<meta property="og:image" content="https://guyue55.github.io/neural-agent-mesh/docs/screenshot.png" />
+<meta name="twitter:card" content="summary_large_image" />
 <title>CODEX // NEURAL AGENT MESH</title>
-<link rel="icon" href="data:," />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%2339ff9e' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='4.5' fill='%2339ff9e'/%3E%3C/svg%3E" />
 <link rel="stylesheet" href="./styles.css" />
 <script type="importmap">
 {
@@ -17,6 +26,7 @@
 </script>
 </head>
 <body>
+<noscript><div class="noscript-note">NEURAL AGENT MESH requires JavaScript and WebGL. Enable JavaScript to view the live pipeline console. The project README documents the full architecture.</div></noscript>
 <div id="app">
 
   <!-- ================= TOP BAR ================= -->
@@ -88,6 +98,21 @@
     <section id="stage">
       <canvas id="gl"></canvas>
       <div id="labels"></div>
+
+      <div id="gl-fallback" role="status" aria-live="polite" hidden>
+        <div class="gfb-inner">
+          <div class="gfb-title">3D MESH UNAVAILABLE</div>
+          <p class="gfb-copy">This browser could not create a WebGL context, so the neural mesh cannot be drawn. The pipeline console beside this panel remains readable and the topology is summarised below.</p>
+          <div class="gfb-grid">
+            <div><span>NODES</span><b>21</b></div>
+            <div><span>CHANNELS</span><b>474</b></div>
+            <div><span>LAYERS</span><b>5</b></div>
+            <div><span>FLOW</span><b>CC → PM → WORKER</b></div>
+          </div>
+          <p class="gfb-hint">Try enabling hardware acceleration, updating your browser, or reloading the page.</p>
+          <button id="gfb-retry" type="button">RELOAD</button>
+        </div>
+      </div>
 
       <div class="hud hud-tl">
         <div class="hud-title">GRAPH TOPOLOGY <span class="hud-live">LIVE</span></div>

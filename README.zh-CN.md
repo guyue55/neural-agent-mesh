@@ -27,6 +27,8 @@
 - **三层控制台**：DRAFT / BUILD / RUN PIPELINE、21 张 Agent 卡片、日志终端、吞吐计数、费用、brief 输入、STOP / RESTART。
 - **真能跑的状态机**：打开页面无人干预自动 BOOT→DRAFT→BUILD→RUN，自动派发、核验、弹人工审批、循环。
 - **完全离线**：Three.js r180 与 11 个实际用到的 addon 固化在 `vendor/`，无 CDN、无构建步骤、运行时零网络请求。
+- **响应式**：980px 以下三栏改为可滚动单列（不隐藏任何面板），状态栏固定贴底，小屏高 DPI 自动降采样。
+- **优雅降级**：`prefers-reduced-motion` 放慢 shader 时钟并关掉 CRT 装饰；WebGL 不可用或上下文丢失时显示带拓扑摘要的可读降级页，而不是黑屏；后台标签页停止 GPU 绘制。
 
 ## 本地运行
 
@@ -76,11 +78,23 @@ npm start       # http://127.0.0.1:4173/
 ```bash
 npm run verify                                   # 31 项功能检查 + 9 张阶段截图
 npm run verify:viewports                         # 7 种视口：标签重叠 / 裁切
+npm run verify:ux                                # 35 项体验与健壮性检查
+npm run verify:all                               # 一次跑完本地三套
 npm run verify:live -- https://你的部署地址/      # 19 项线上检查
 BASE_URL=http://127.0.0.1:4173/ npm run verify  # 指向其他地址
 ```
 
-当前结果：**31/31** 功能、**7/7** 视口、**19/19** 线上检查，控制台 / 页面 / 运行时 / HTTP 错误均为 0。截图与 `report.json` 输出到 `tools/shots/`（已 gitignore）。每次 push / PR 由 [CI](.github/workflows/ci.yml) 自动跑语法检查与完整 `verify`。
+`verify:ux` 覆盖 390 / 900 / 1024 / 1440 四种布局、DPR 上限、21 标签零重叠、`prefers-reduced-motion`、模拟 WebGL 不可用、上下文丢失、后台标签页暂停 GPU 绘制与页面元信息。
+
+当前结果：**31/31** 功能、**7/7** 视口、**35/35** 体验、**19/19** 线上检查，控制台 / 页面 / 运行时 / HTTP 错误均为 0。截图与 `report.json`、`ux-report.json` 输出到 `tools/shots/`（已 gitignore）。每次 push / PR 由 [CI](.github/workflows/ci.yml) 自动跑语法检查与 `verify` + `verify:viewports` + `verify:ux`。
+
+## 已知边界与后续方向
+
+- **暂不迁移 WebGPU / TSL**：Three.js 最新为 r187（2026-10），本项目刻意固定本地化的 r180 WebGL 路径；迁移需把所有自定义 GLSL 改写成 TSL、把 `EffectComposer` 换成节点式后处理。474 条线已合并为单次绘制，21 节点场景拿不到 WebGPU 的主要收益。
+- **安全响应头**：GitHub Pages 无法设置 CSP / HSTS / X-Frame-Options 等响应头；页面本身零第三方脚本并设了严格 `Referrer-Policy`，要加响应头需前置 CDN 或换托管。
+- **接真实 Agent**：建议按 OpenTelemetry GenAI 语义约定（仍为实验性）产出 `invoke_agent` / `execute_tool` / `invoke_workflow` span 与 `gen_ai.*` 属性，再适配成 `src/workflow.js` 消费的状态对象；3D 与 DOM 层不用改。
+- **后台标签页**：浏览器会暂停 `requestAnimationFrame`，回到页面后按真实时钟继续，不补播整段间隔。
+- **可选的仓库加固**：Actions 按 SHA 固定、CodeQL / OpenSSF Scorecard、签名发布、分支保护。多协作者时值得做，对当前交付的站点无影响。
 
 ## 部署
 

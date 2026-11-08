@@ -54,7 +54,7 @@ export class NeuralScene {
       alpha: false,
       powerPreference: 'high-performance',
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
+    this.applyPixelRatio(w, h);
     this.renderer.setSize(w, h, false);
     this.renderer.setClearColor(PALETTE.bg, 1);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -551,7 +551,11 @@ export class NeuralScene {
   }
 
   update(dt, state) {
-    this.time += dt;
+    // motionScale is lowered for prefers-reduced-motion users; the workflow
+    // state machine itself is unaffected, only decorative motion is slowed.
+    const scale = this.motionScale ?? 1;
+    const vdt = dt * scale;
+    this.time += vdt;
     const t = this.time;
 
     this.controls.update();
@@ -566,10 +570,10 @@ export class NeuralScene {
       const u = g.userData;
       g.position.y = n.pos.y + Math.sin(t * 0.85 + u.phase) * 0.085;
       g.position.x = n.pos.x + Math.cos(t * 0.62 + u.phase) * 0.045;
-      u.ring1.rotation.z += dt * (0.45 + n.energy * 1.4);
-      u.ring1.rotation.x += dt * 0.12;
-      u.ring2.rotation.z -= dt * (0.28 + n.energy * 0.8);
-      u.ring2.rotation.y += dt * 0.18;
+      u.ring1.rotation.z += vdt * (0.45 + n.energy * 1.4);
+      u.ring1.rotation.x += vdt * 0.12;
+      u.ring2.rotation.z -= vdt * (0.28 + n.energy * 0.8);
+      u.ring2.rotation.y += vdt * 0.18;
       const a = t * 1.25 + u.phase;
       u.dot.position.set(Math.cos(a) * u.r * 1.98, Math.sin(a) * u.r * 1.98, Math.sin(a * 0.7) * 0.35);
       const s = 1 + n.energy * 0.16 + Math.sin(t * 2.4 + u.phase) * 0.025;
@@ -681,6 +685,14 @@ export class NeuralScene {
     this.composer.render();
   }
 
+  /** Bound the backing-store resolution; small/hi-DPI screens otherwise pay
+   *  for 2x pixels through a Bloom chain with no visible benefit. */
+  applyPixelRatio(w, h) {
+    const cap = Math.min(w, h) < 620 ? 1.25 : 1.75;
+    const dpr = Math.min(window.devicePixelRatio || 1, cap);
+    if (this.renderer.getPixelRatio() !== dpr) this.renderer.setPixelRatio(dpr);
+  }
+
   resize() {
     const w = Math.max(1, this.stage.clientWidth);
     const h = Math.max(1, this.stage.clientHeight);
@@ -691,6 +703,7 @@ export class NeuralScene {
     const fov = 2 * Math.atan(half) * 180 / Math.PI;
     this.camera.fov = Math.min(88, Math.max(30, fov));
     this.camera.updateProjectionMatrix();
+    this.applyPixelRatio(w, h);
     this.renderer.setSize(w, h, false);
     this.composer.setSize(w, h);
     this.crt.uniforms.uResolution.value = [w, h];

@@ -1,6 +1,6 @@
 {
   "name": "neural-agent-mesh",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Three.js neural-style visualizer for multi-agent workflow state: 21 nodes, 474 handoff channels, live progress, logs and cost telemetry.",
   "type": "module",
   "main": "src/main.js",
@@ -9,7 +9,9 @@
     "dev": "node server.mjs",
     "verify": "node tools/verify.mjs",
     "verify:viewports": "node tools/verify-viewports.mjs",
-    "verify:live": "node tools/verify-live.mjs"
+    "verify:ux": "node tools/verify-ux.mjs",
+    "verify:live": "node tools/verify-live.mjs",
+    "verify:all": "npm run verify && npm run verify:viewports && npm run verify:ux"
   },
   "keywords": [
     "threejs",
@@ -36,9 +38,9 @@
     "node": ">=18"
   },
   "dependencies": {
-    "three": "^0.180.0"
+    "three": "0.180.0"
   },
   "devDependencies": {
-    "playwright": "^1.56.1"
+    "playwright": "1.56.1"
   }
 }
