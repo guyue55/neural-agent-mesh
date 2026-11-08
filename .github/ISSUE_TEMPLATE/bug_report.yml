@@ -1,0 +1,61 @@
+name: Bug report
+description: Something renders wrong, breaks or throws in the browser
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Rendering issues are much easier to fix with the environment details below.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What did you expect, and what did you see instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. npm ci && npm start
+        2. Open http://127.0.0.1:4173/
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: OS and browser
+      placeholder: "macOS 15 / Chrome 131"
+    validations:
+      required: true
+  - type: input
+    id: viewport
+    attributes:
+      label: Viewport size
+      placeholder: "1440x900"
+    validations:
+      required: true
+  - type: dropdown
+    id: webgl
+    attributes:
+      label: WebGL2 available?
+      options:
+        - "Yes"
+        - "No"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console output
+      description: Paste any errors or warnings from DevTools
+      render: shell
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot
+      description: Drag an image in here if the problem is visual

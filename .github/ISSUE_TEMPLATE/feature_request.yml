@@ -1,0 +1,42 @@
+name: Feature request
+description: Suggest a new capability, shader effect or adapter
+title: "[Feature] "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or motivation
+      description: What are you trying to see or do that the current UI cannot?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which layer does this touch?
+      options:
+        - 3D rendering / shaders
+        - DOM console / UI
+        - Workflow state machine
+        - Verification / CI
+        - Documentation
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: checkboxes
+    id: constraints
+    attributes:
+      label: Constraints
+      options:
+        - label: I understand the project stays buildless and offline (no CDN at runtime)
+          required: true

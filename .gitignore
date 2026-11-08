@@ -1,0 +1,26 @@
+# Dependencies (vendored Three.js is committed on purpose; node_modules is not)
+node_modules/
+
+# Verification artifacts (screenshots + machine report are generated locally / in CI)
+tools/shots/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# Logs, local env, coverage
+*.log
+.env
+.env.*
+!.env.example
+coverage/
+dist/
+build/
+
+# Playwright
+playwright-report/
+test-results/
