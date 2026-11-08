@@ -13,7 +13,9 @@ permissions:
 jobs:
   verify:
     name: Syntax + real-browser verification
-    runs-on: ubuntu-latest
+    # Pin to 24.04: ubuntu-latest now resolves to 26.04, which Playwright
+    # 1.56.x does not support for browser installation yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
