@@ -78,7 +78,7 @@ npm start       # http://127.0.0.1:4173/
 ```bash
 npm run verify                                   # 31 项功能检查 + 9 张阶段截图
 npm run verify:viewports                         # 7 种视口：标签重叠 / 裁切
-npm run verify:ux                                # 35 项体验与健壮性检查
+npm run verify:ux                                # 36 项体验与健壮性检查
 npm run verify:all                               # 一次跑完本地三套
 npm run verify:live -- https://你的部署地址/      # 19 项线上检查
 BASE_URL=http://127.0.0.1:4173/ npm run verify  # 指向其他地址
@@ -86,7 +86,7 @@ BASE_URL=http://127.0.0.1:4173/ npm run verify  # 指向其他地址
 
 `verify:ux` 覆盖 390 / 900 / 1024 / 1440 四种布局、DPR 上限、21 标签零重叠、`prefers-reduced-motion`、模拟 WebGL 不可用、上下文丢失、后台标签页暂停 GPU 绘制与页面元信息。
 
-当前结果：**31/31** 功能、**7/7** 视口、**35/35** 体验、**19/19** 线上检查，控制台 / 页面 / 运行时 / HTTP 错误均为 0。截图与 `report.json`、`ux-report.json` 输出到 `tools/shots/`（已 gitignore）。每次 push / PR 由 [CI](.github/workflows/ci.yml) 自动跑语法检查与 `verify` + `verify:viewports` + `verify:ux`。
+当前结果：**31/31** 功能、**7/7** 视口、**36/36** 体验、**19/19** 线上检查，控制台 / 页面 / 运行时 / HTTP 错误均为 0。截图与 `report.json`、`ux-report.json` 输出到 `tools/shots/`（已 gitignore）。每次 push / PR 由 [CI](.github/workflows/ci.yml) 自动跑语法检查与 `verify` + `verify:viewports` + `verify:ux`。
 
 ## 已知边界与后续方向
 

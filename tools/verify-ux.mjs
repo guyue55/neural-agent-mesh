@@ -84,13 +84,26 @@ for (const [w, h, label] of [[1440, 900, 'desktop 1440x900'], [1024, 900, 'table
       'scrollHeight ' + await page.evaluate(() => document.documentElement.scrollHeight));
     const chrome = await page.evaluate(() => {
       const sb = document.getElementById('statusbar').getBoundingClientRect();
+      const cells = [...document.querySelectorAll('.sb-cell')].map((e) => {
+        const r = e.getBoundingClientRect();
+        const sp = e.querySelector('span')?.getBoundingClientRect();
+        const bb = e.querySelector('b')?.getBoundingClientRect();
+        return {
+          display: getComputedStyle(e).display, w: Math.round(r.width),
+          clash: !!(sp && bb && sp.right > bb.left && sp.left < bb.right),
+        };
+      });
       return {
         statusH: Math.round(sb.height), statusBottom: Math.round(sb.bottom), vh: innerHeight,
         hudTr: getComputedStyle(document.querySelector('.hud-tr')).display,
+        cells,
       };
     });
     ok('mobile: status bar keeps full height and stays pinned',
-      chrome.statusH >= 40 && Math.abs(chrome.statusBottom - chrome.vh) <= 4, JSON.stringify(chrome));
+      chrome.statusH >= 80 && Math.abs(chrome.statusBottom - chrome.vh) <= 4, `h=${chrome.statusH} bottom=${chrome.statusBottom}/${chrome.vh}`);
+    ok('mobile: all 8 status cells readable, no text collisions',
+      chrome.cells.length === 8 && chrome.cells.every((c) => c.display !== 'none' && c.w >= 150 && !c.clash),
+      JSON.stringify(chrome.cells));
     ok('mobile: phase HUD hidden to avoid label collision', chrome.hudTr === 'none', chrome.hudTr);
   }
   await ctx.close();

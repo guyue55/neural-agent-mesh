@@ -88,7 +88,7 @@ Four real-browser suites drive a system Chrome (or Playwright Chromium on Linux/
 ```bash
 npm run verify                                  # 31 functional checks + 9 screenshots
 npm run verify:viewports                        # 7 viewport sizes, label overlap / clipping
-npm run verify:ux                               # 35 UX / resilience checks (see below)
+npm run verify:ux                               # 36 UX / resilience checks (see below)
 npm run verify:all                              # all three local suites
 npm run verify:live -- https://your-host/       # 19 checks against a deployed URL
 BASE_URL=http://127.0.0.1:4173/ npm run verify # point the suites at another host
@@ -96,7 +96,7 @@ BASE_URL=http://127.0.0.1:4173/ npm run verify # point the suites at another hos
 
 `verify:ux` covers 390 px / 900 px / 1024 px / 1440 px layouts, DPR capping, 21 labels with zero overlaps, `prefers-reduced-motion`, a simulated missing WebGL context, `webglcontextlost`, background-tab GPU suspension and document metadata.
 
-Latest results on this codebase: **31/31** functional, **7/7** viewports, **35/35** UX, **19/19** deployed-URL checks; zero console, page, runtime or HTTP errors. Screenshots and machine-readable `report.json` / `ux-report.json` are written to `tools/shots/` (git-ignored).
+Latest results on this codebase: **31/31** functional, **7/7** viewports, **36/36** UX, **19/19** deployed-URL checks; zero console, page, runtime or HTTP errors. Screenshots and machine-readable `report.json` / `ux-report.json` are written to `tools/shots/` (git-ignored).
 
 CI runs the syntax check and the full `verify` + `verify:viewports` + `verify:ux` suites on every push / PR via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
 

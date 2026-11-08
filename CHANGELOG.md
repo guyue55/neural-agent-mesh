@@ -14,12 +14,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Background-tab handling: GPU rendering is skipped while `document.hidden`; pipeline state remains consistent.
 - Adaptive DPR cap (1.25 on small stages, 1.75 elsewhere), re-applied on resize.
 - Document metadata: description, Open Graph image, theme colour, strict `Referrer-Policy`, SVG favicon and a `noscript` note.
-- `tools/verify-ux.mjs`: 35 real-browser checks covering layout, resilience and accessibility; wired into `npm run verify:ux`, `verify:all` and CI.
+- `tools/verify-ux.mjs`: 36 real-browser checks covering layout, resilience and accessibility; wired into `npm run verify:ux`, `verify:all` and CI.
 
 ### Fixed
 
 - Mobile layout: the old `max-width: 780px` rule hid both side panels with `display: none` while the grid still reserved their rows, leaving a 190 px canvas above ~600 px of blank space.
-- Narrow-screen phase badge overlapping node labels; status bar collapsing to 16 px and losing its sticky position.
+- Narrow-screen phase badge overlapping node labels; status bar collapsing to 16 px, losing its sticky position and hiding six of eight telemetry cells. On narrow screens the status bar is now a pinned 2 x 4 grid showing all eight metrics without text collisions.
 - WebGL initialization failure previously showed only "INITIALIZATION FAILED — SEE CONSOLE" over a black canvas.
 
 ### Changed
